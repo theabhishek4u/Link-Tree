@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import {
-  Link2, Plus, Trash2, ExternalLink, LogOut, Copy, GripVertical,
+  Link2, Trash2, ExternalLink, LogOut, Copy, GripVertical,
   Instagram, Facebook, Linkedin, Twitter, Youtube, Globe, ShoppingBag,
   User, Settings, Eye
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import AvatarUpload from "@/components/AvatarUpload";
+import SocialLinkForm from "@/components/SocialLinkForm";
 
 const ICON_OPTIONS = [
   { value: "instagram", label: "Instagram", icon: Instagram },
