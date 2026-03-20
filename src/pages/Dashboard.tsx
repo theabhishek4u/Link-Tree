@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import {
-  Link2, Plus, Trash2, ExternalLink, LogOut, Copy, GripVertical,
+  Link2, Trash2, ExternalLink, LogOut, Copy, GripVertical,
   Instagram, Facebook, Linkedin, Twitter, Youtube, Globe, ShoppingBag,
   User, Settings, Eye
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import AvatarUpload from "@/components/AvatarUpload";
+import SocialLinkForm from "@/components/SocialLinkForm";
 
 const ICON_OPTIONS = [
   { value: "instagram", label: "Instagram", icon: Instagram },
@@ -42,7 +44,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [tab, setTab] = useState<"links" | "profile">("links");
-  const [newLink, setNewLink] = useState({ title: "", url: "", icon: "other", link_type: "link" });
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({
     display_name: "",
@@ -60,13 +61,18 @@ export default function Dashboard() {
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  const handleAddLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newLink.title.trim() || !newLink.url.trim()) return;
+  const handleAddLink = async (link: { title: string; url: string; icon: string; link_type: string }) => {
     try {
-      await addLink.mutateAsync(newLink);
-      setNewLink({ title: "", url: "", icon: "other", link_type: "link" });
+      await addLink.mutateAsync(link);
       toast.success("Link added!");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleAvatarUploaded = async (url: string) => {
+    try {
+      await updateProfile.mutateAsync({ avatar_url: url });
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -174,57 +180,7 @@ export default function Dashboard() {
 
         {tab === "links" && (
           <div className="space-y-6 animate-fade-up">
-            {/* Add Link Form */}
-            <form onSubmit={handleAddLink} className="glass-card rounded-xl p-5 space-y-4">
-              <h2 className="font-heading font-semibold text-lg">Add New Link</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-sm">Title</Label>
-                  <Input
-                    value={newLink.title}
-                    onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
-                    placeholder="My Instagram"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm">URL</Label>
-                  <Input
-                    value={newLink.url}
-                    onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-                    placeholder="https://instagram.com/username"
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm">Type</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {ICON_OPTIONS.map((opt) => {
-                    const Icon = opt.icon;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setNewLink({ ...newLink, icon: opt.value })}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                          newLink.icon === opt.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border text-muted-foreground hover:border-primary/40"
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <Button type="submit" disabled={addLink.isPending} className="h-10">
-                <Plus className="w-4 h-4 mr-1" />
-                {addLink.isPending ? "Adding..." : "Add Link"}
-              </Button>
-            </form>
+            <SocialLinkForm onSubmit={handleAddLink} isPending={addLink.isPending} />
 
             {/* Links List */}
             <div className="space-y-2">
@@ -278,6 +234,13 @@ export default function Dashboard() {
             {editingProfile ? (
               <form onSubmit={handleUpdateProfile} className="glass-card rounded-xl p-5 space-y-4">
                 <h2 className="font-heading font-semibold text-lg">Edit Profile</h2>
+                <div className="flex justify-center">
+                  <AvatarUpload
+                    currentUrl={profile?.avatar_url || null}
+                    displayName={profile?.display_name || null}
+                    onUploaded={handleAvatarUploaded}
+                  />
+                </div>
                 <div>
                   <Label className="text-sm">Username</Label>
                   <div className="flex items-center mt-1">
@@ -323,13 +286,17 @@ export default function Dashboard() {
             ) : (
               <div className="glass-card rounded-xl p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-3 text-2xl font-heading font-bold text-muted-foreground">
-                      {profile?.display_name?.[0]?.toUpperCase() || "?"}
+                  <div className="flex items-center gap-4">
+                    <AvatarUpload
+                      currentUrl={profile?.avatar_url || null}
+                      displayName={profile?.display_name || null}
+                      onUploaded={handleAvatarUploaded}
+                    />
+                    <div>
+                      <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
+                      <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
+                      {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
                     </div>
-                    <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
-                    <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
-                    {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
                   </div>
                   <Button variant="outline" size="sm" onClick={startEditProfile}>
                     <Settings className="w-4 h-4 mr-1" /> Edit
