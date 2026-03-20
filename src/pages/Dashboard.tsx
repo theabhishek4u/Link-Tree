@@ -180,57 +180,7 @@ export default function Dashboard() {
 
         {tab === "links" && (
           <div className="space-y-6 animate-fade-up">
-            {/* Add Link Form */}
-            <form onSubmit={handleAddLink} className="glass-card rounded-xl p-5 space-y-4">
-              <h2 className="font-heading font-semibold text-lg">Add New Link</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-sm">Title</Label>
-                  <Input
-                    value={newLink.title}
-                    onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
-                    placeholder="My Instagram"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm">URL</Label>
-                  <Input
-                    value={newLink.url}
-                    onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-                    placeholder="https://instagram.com/username"
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm">Type</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {ICON_OPTIONS.map((opt) => {
-                    const Icon = opt.icon;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setNewLink({ ...newLink, icon: opt.value })}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                          newLink.icon === opt.value
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border text-muted-foreground hover:border-primary/40"
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <Button type="submit" disabled={addLink.isPending} className="h-10">
-                <Plus className="w-4 h-4 mr-1" />
-                {addLink.isPending ? "Adding..." : "Add Link"}
-              </Button>
-            </form>
+            <SocialLinkForm onSubmit={handleAddLink} isPending={addLink.isPending} />
 
             {/* Links List */}
             <div className="space-y-2">
