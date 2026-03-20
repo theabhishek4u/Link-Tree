@@ -292,9 +292,10 @@ export default function Dashboard() {
                       onUploaded={handleAvatarUploaded}
                     />
                     <div>
-                    <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
-                    <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
-                    {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
+                      <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
+                      <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
+                      {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
+                    </div>
                   </div>
                   <Button variant="outline" size="sm" onClick={startEditProfile}>
                     <Settings className="w-4 h-4 mr-1" /> Edit
