@@ -44,7 +44,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const [tab, setTab] = useState<"links" | "profile">("links");
-  const [newLink, setNewLink] = useState({ title: "", url: "", icon: "other", link_type: "link" });
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({
     display_name: "",
