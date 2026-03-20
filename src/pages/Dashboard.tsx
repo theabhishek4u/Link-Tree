@@ -234,7 +234,13 @@ export default function Dashboard() {
             {editingProfile ? (
               <form onSubmit={handleUpdateProfile} className="glass-card rounded-xl p-5 space-y-4">
                 <h2 className="font-heading font-semibold text-lg">Edit Profile</h2>
-                <div>
+                <div className="flex justify-center">
+                  <AvatarUpload
+                    currentUrl={profile?.avatar_url || null}
+                    displayName={profile?.display_name || null}
+                    onUploaded={handleAvatarUploaded}
+                  />
+                </div>
                   <Label className="text-sm">Username</Label>
                   <div className="flex items-center mt-1">
                     <span className="text-sm text-muted-foreground mr-1">{window.location.host}/</span>
