@@ -61,13 +61,18 @@ export default function Dashboard() {
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  const handleAddLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newLink.title.trim() || !newLink.url.trim()) return;
+  const handleAddLink = async (link: { title: string; url: string; icon: string; link_type: string }) => {
     try {
-      await addLink.mutateAsync(newLink);
-      setNewLink({ title: "", url: "", icon: "other", link_type: "link" });
+      await addLink.mutateAsync(link);
       toast.success("Link added!");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleAvatarUploaded = async (url: string) => {
+    try {
+      await updateProfile.mutateAsync({ avatar_url: url });
     } catch (err: any) {
       toast.error(err.message);
     }
