@@ -241,6 +241,7 @@ export default function Dashboard() {
                     onUploaded={handleAvatarUploaded}
                   />
                 </div>
+                <div>
                   <Label className="text-sm">Username</Label>
                   <div className="flex items-center mt-1">
                     <span className="text-sm text-muted-foreground mr-1">{window.location.host}/</span>
