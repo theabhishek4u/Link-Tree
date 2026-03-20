@@ -285,10 +285,13 @@ export default function Dashboard() {
             ) : (
               <div className="glass-card rounded-xl p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-3 text-2xl font-heading font-bold text-muted-foreground">
-                      {profile?.display_name?.[0]?.toUpperCase() || "?"}
-                    </div>
+                  <div className="flex items-center gap-4">
+                    <AvatarUpload
+                      currentUrl={profile?.avatar_url || null}
+                      displayName={profile?.display_name || null}
+                      onUploaded={handleAvatarUploaded}
+                    />
+                    <div>
                     <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
                     <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
                     {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
