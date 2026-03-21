@@ -11,11 +11,13 @@ import { toast } from "sonner";
 import {
   Link2, Trash2, ExternalLink, LogOut, Copy, GripVertical,
   Instagram, Facebook, Linkedin, Twitter, Youtube, Globe, ShoppingBag,
-  User, Settings, Eye
+  User, Eye, Settings, Mail, Phone, BadgeCheck,
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import AvatarUpload from "@/components/AvatarUpload";
+import BannerUpload from "@/components/BannerUpload";
 import SocialLinkForm from "@/components/SocialLinkForm";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ICON_OPTIONS = [
   { value: "instagram", label: "Instagram", icon: Instagram },
@@ -49,6 +51,8 @@ export default function Dashboard() {
     display_name: "",
     bio: "",
     username: "",
+    email_contact: "",
+    phone: "",
   });
 
   if (authLoading) {
@@ -78,6 +82,14 @@ export default function Dashboard() {
     }
   };
 
+  const handleBannerUploaded = async (url: string) => {
+    try {
+      await updateProfile.mutateAsync({ banner_url: url });
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -94,6 +106,8 @@ export default function Dashboard() {
       display_name: profile?.display_name || "",
       bio: profile?.bio || "",
       username: profile?.username || "",
+      email_contact: profile?.email_contact || "",
+      phone: profile?.phone || "",
     });
     setEditingProfile(true);
   };
@@ -124,16 +138,17 @@ export default function Dashboard() {
             </div>
             <span className="font-heading font-semibold">LinkFolio</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
             {profile?.username && (
               <Button variant="ghost" size="sm" onClick={() => navigate(`/${profile.username}`)}>
                 <Eye className="w-4 h-4 mr-1" />
-                View Page
+                <span className="hidden sm:inline">View Page</span>
               </Button>
             )}
             <Button variant="ghost" size="sm" onClick={copyLink}>
               <Copy className="w-4 h-4 mr-1" />
-              Copy Link
+              <span className="hidden sm:inline">Copy Link</span>
             </Button>
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="w-4 h-4" />
@@ -234,6 +249,19 @@ export default function Dashboard() {
             {editingProfile ? (
               <form onSubmit={handleUpdateProfile} className="glass-card rounded-xl p-5 space-y-4">
                 <h2 className="font-heading font-semibold text-lg">Edit Profile</h2>
+
+                {/* Banner */}
+                <div>
+                  <Label className="text-sm">Banner Image</Label>
+                  <div className="mt-1">
+                    <BannerUpload
+                      currentUrl={profile?.banner_url || null}
+                      onUploaded={handleBannerUploaded}
+                    />
+                  </div>
+                </div>
+
+                {/* Avatar */}
                 <div className="flex justify-center">
                   <AvatarUpload
                     currentUrl={profile?.avatar_url || null}
@@ -241,6 +269,7 @@ export default function Dashboard() {
                     onUploaded={handleAvatarUploaded}
                   />
                 </div>
+
                 <div>
                   <Label className="text-sm">Username</Label>
                   <div className="flex items-center mt-1">
@@ -274,6 +303,49 @@ export default function Dashboard() {
                     rows={3}
                   />
                 </div>
+
+                {/* Contact Info */}
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="font-heading font-semibold text-sm mb-3 flex items-center gap-2">
+                    <Mail className="w-4 h-4" /> Contact Information
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-sm">Email (public)</Label>
+                      <Input
+                        type="email"
+                        value={profileForm.email_contact}
+                        onChange={(e) => setProfileForm({ ...profileForm, email_contact: e.target.value })}
+                        placeholder="hello@example.com"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Phone (public)</Label>
+                      <Input
+                        type="tel"
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                        placeholder="+91 98765 43210"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Verification Badge Info */}
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <BadgeCheck className={`w-5 h-5 ${profile?.is_verified ? "text-blue-500 fill-blue-500" : "text-muted-foreground"}`} />
+                    <span className="font-medium">
+                      {profile?.is_verified ? "Verified Profile ✓" : "Not Verified"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verification badges are granted by LinkFolio admins.
+                  </p>
+                </div>
+
                 <div className="flex gap-2">
                   <Button type="submit" disabled={updateProfile.isPending}>
                     {updateProfile.isPending ? "Saving..." : "Save Changes"}
@@ -284,23 +356,55 @@ export default function Dashboard() {
                 </div>
               </form>
             ) : (
-              <div className="glass-card rounded-xl p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <AvatarUpload
-                      currentUrl={profile?.avatar_url || null}
-                      displayName={profile?.display_name || null}
-                      onUploaded={handleAvatarUploaded}
-                    />
-                    <div>
-                      <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
-                      <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
-                      {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
+              <div className="glass-card rounded-xl overflow-hidden">
+                {/* Banner Preview */}
+                <div className="w-full h-32 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5 overflow-hidden">
+                  {profile?.banner_url ? (
+                    <img src={profile.banner_url} alt="Banner" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full hero-gradient opacity-20" />
+                  )}
+                </div>
+
+                <div className="p-5 -mt-10">
+                  <div className="flex items-end justify-between mb-4">
+                    <div className="flex items-end gap-4">
+                      <div className="relative">
+                        <div className="ring-4 ring-card rounded-full">
+                          <AvatarUpload
+                            currentUrl={profile?.avatar_url || null}
+                            displayName={profile?.display_name || null}
+                            onUploaded={handleAvatarUploaded}
+                          />
+                        </div>
+                        {profile?.is_verified && (
+                          <BadgeCheck className="absolute -bottom-1 -right-1 w-6 h-6 text-blue-500 fill-blue-500" />
+                        )}
+                      </div>
                     </div>
+                    <Button variant="outline" size="sm" onClick={startEditProfile}>
+                      <Settings className="w-4 h-4 mr-1" /> Edit
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm" onClick={startEditProfile}>
-                    <Settings className="w-4 h-4 mr-1" /> Edit
-                  </Button>
+
+                  <h2 className="font-heading font-semibold text-lg">{profile?.display_name || "Your Name"}</h2>
+                  <p className="text-sm text-muted-foreground">@{profile?.username || "username"}</p>
+                  {profile?.bio && <p className="text-sm mt-2 text-foreground/80">{profile.bio}</p>}
+
+                  {(profile?.email_contact || profile?.phone) && (
+                    <div className="flex flex-wrap gap-3 mt-3">
+                      {profile?.email_contact && (
+                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Mail className="w-3.5 h-3.5" /> {profile.email_contact}
+                        </span>
+                      )}
+                      {profile?.phone && (
+                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Phone className="w-3.5 h-3.5" /> {profile.phone}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
