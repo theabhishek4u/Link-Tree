@@ -48,6 +48,10 @@ export function useUpdateProfile() {
       username?: string;
       avatar_url?: string;
       theme?: string;
+      banner_url?: string;
+      email_contact?: string;
+      phone?: string;
+      is_verified?: boolean;
     }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
