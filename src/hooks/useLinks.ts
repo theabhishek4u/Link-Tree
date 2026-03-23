@@ -43,7 +43,7 @@ export function useAddLink() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (link: { title: string; url: string; icon?: string; link_type?: string }) => {
+    mutationFn: async (link: { title: string; url: string; icon?: string; link_type?: string; image_url?: string; description?: string }) => {
       if (!user) throw new Error("Not authenticated");
       const { data: existing } = await supabase
         .from("links")

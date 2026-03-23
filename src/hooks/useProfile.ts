@@ -52,6 +52,7 @@ export function useUpdateProfile() {
       email_contact?: string;
       phone?: string;
       is_verified?: boolean;
+      location?: string;
     }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
