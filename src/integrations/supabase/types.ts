@@ -17,8 +17,10 @@ export type Database = {
       links: {
         Row: {
           created_at: string
+          description: string | null
           icon: string | null
           id: string
+          image_url: string | null
           is_active: boolean
           link_type: string
           sort_order: number
@@ -29,8 +31,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           link_type?: string
           sort_order?: number
@@ -41,8 +45,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           link_type?: string
           sort_order?: number
@@ -63,6 +69,7 @@ export type Database = {
           email_contact: string | null
           id: string
           is_verified: boolean
+          location: string | null
           phone: string | null
           theme: string | null
           updated_at: string
@@ -78,6 +85,7 @@ export type Database = {
           email_contact?: string | null
           id?: string
           is_verified?: boolean
+          location?: string | null
           phone?: string | null
           theme?: string | null
           updated_at?: string
@@ -93,6 +101,7 @@ export type Database = {
           email_contact?: string | null
           id?: string
           is_verified?: boolean
+          location?: string | null
           phone?: string | null
           theme?: string | null
           updated_at?: string
